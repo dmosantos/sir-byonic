@@ -1,0 +1,40 @@
+/* Palette */
+$color-1: #63d131;
+$color-2: #0c0c0c;
+$color-3: rgba(255, 255, 255, .1);
+
+/* Theme Colors */
+$bg-color: $color-2;
+$theme-color: $color-1;
+$theme-color-hover: lighten($theme-color, 10%);
+$primary-text-color: $color-1;
+$secundary-text-color: $color-1;
+$link-color: $color-1;
+$link-color-hover: lighten($link-color, 15%);
+$border-color: $color-3;
+
+/* Sizes */
+$border-radius: 3px;
+
+/* CSS Variables */
+:root {
+
+    /* Base Color Palette: */
+    --color-1: #{$color-1};
+    --color-2: #{$color-2};
+    --color-3: #{$color-3};
+
+    /* Theme Colors */
+    --bg-color: #{$bg-color};
+    --theme-color: #{$theme-color};
+    --theme-color-hover: #{$theme-color-hover};
+    --primary-text-color: #{$primary-text-color};
+    --secundary-text-color: #{$secundary-text-color};
+    --link-color: #{$link-color};
+    --link-color-hover: #{$link-color-hover};
+    --border-color: #{$color-3};
+
+    /* Sizes */
+    --border-radius: #{$border-radius};
+
+}
