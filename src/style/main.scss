@@ -21,8 +21,27 @@ html {
 
 body {
 
+    animation: glow .05s linear infinite alternate;
+    background-color: var(--bg-color);
     color: var(--primary-text-color);
     text-transform: uppercase;
+    text-shadow: 0px 0px 5px var(--color-4), 0px 0px 5px var(--color-1), 0px 0px 5px var(--color-4);
+
+}
+
+@keyframes glow {
+
+    from {
+
+        text-shadow: 0px 0px 3px var(--color-4), 0px 0px 5px var(--color-1), 0px 0px 3px var(--color-4);
+
+    }
+
+    to {
+
+        text-shadow: 0px 0px 5px var(--color-4), 0px 0px 3px var(--color-1), 0px 0px 5px var(--color-4);
+
+    }
 
 }
 

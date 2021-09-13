@@ -298,7 +298,7 @@ export default {
 .input {
 
     align-items: flex-start;
-    border-top: 1px solid var(--border-color);
+    border-top: 3px solid var(--border-color);
     display: flex;
 
     &__pwd {

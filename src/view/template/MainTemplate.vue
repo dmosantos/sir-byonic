@@ -41,8 +41,8 @@ export default {
 .overlay {
 
     animation: blink .05s linear infinite alternate;
-    background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49%, rgba(0,255,0,.025) 51%, rgba(0,255,0,.025) 100%);
-    background-size: 100% .25rem;
+    background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45%, rgba(0,255,0,.025) 55%, rgba(0,255,0,.025) 100%);
+    background-size: 100% .3rem;
     background-repeat: repeat;
     box-shadow: inset 0 0 150px 30px rgba(0, 0, 0, .6);
     position: fixed;
@@ -59,15 +59,15 @@ export default {
 
     from {
 
-        background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49%, rgba(0,255,0,.025) 51%, rgba(0,255,0,.025) 100%);
+        background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45%, rgba(0,255,0,.025) 55%, rgba(0,255,0,.025) 100%);
         opacity: 1;
 
     }
 
     to {
 
-        background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 49%, rgba(0,255,0,.02) 51%, rgba(0,255,0,.02) 100%);
-        opacity: .8;
+        background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 25%, rgba(0,255,0,.02) 75%, rgba(0,255,0,.02) 100%);
+        opacity: .7;
 
     }
     
