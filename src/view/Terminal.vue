@@ -145,7 +145,7 @@ export default {
             this.sendCommand({ question: '/CLEAR' });
             await this.write('Follow the white rabbit.', 3000);
             this.sendCommand({ question: '/CLEAR' });
-            await this.write('Knock, knock, Neo.', 3000);
+            await this.write('Knock, knock, Neo.', 5000);
             this.sendCommand({ question: '/CLEAR' });
 
             this.enable = true;
