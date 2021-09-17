@@ -4,8 +4,10 @@
         <div :class="$style.input">
             
             <div :class="$style.inputPwd">
-                {{ enable ? pwd : 'AGUARDANDO...' }}<span v-if="enable" ref="char" :class="$style.charRef">\</span>
+                {{ enable ? pwd : '' }}
             </div>
+
+            <span ref="char" :class="$style.charRef">X</span>
 
             <div
                 ref="field"
@@ -13,8 +15,21 @@
                 v-html="computedQuestion"
             ></div>
 
+            <input
+                ref="hiddenInput"
+                :class="$style.hiddenInput"
+                type="text"
+                @input="focusHiddenInput"
+                @blur="focusHiddenInput"
+                autofocus
+            />
 
         </div>
+
+        <div
+            :class="$style.overlay"
+            @click="focusHiddenInput"
+        />
         
         <!-- <ul>
             <li>caretPosition: {{ caretPosition }}</li>
@@ -39,14 +54,15 @@ export default {
         enable: {
             type: Boolean,
             default: true
-        }
+        },
+        write: String
 
     },
 
     data() {
         return {
 
-            pwd: 'COMANDO:',
+            pwd: '',
             caretPosition: 0,
             command: {
                 question: '',
@@ -64,15 +80,27 @@ export default {
 
         computedQuestion() {
 
-            if(!this.$props.enable)
-                return;
+            let question;
+            let caretPosition;
 
-            let question = this.command.question || '';
+            if (this.$props.enable) {
+                
+                question = this.command.question || '';
+                caretPosition = this.caretPosition;
+
+            }
+
+            else {
+
+                question = this.$props.write || '';
+                caretPosition = question.length;
+
+            }
 
             return (
-                question.slice(0, this.caretPosition) +
+                question.slice(0, caretPosition) +
                 `<span></span>` +
-                question.slice(this.caretPosition, question.length)
+                question.slice(caretPosition, question.length)
             ).replace(/ /g, '&nbsp;');
 
         }
@@ -285,6 +313,13 @@ export default {
 
             this.cancel();
 
+        },
+
+        focusHiddenInput() {
+
+            this.$refs.hiddenInput.value = '';
+            this.$refs.hiddenInput.focus();
+
         }
 
     }
@@ -298,12 +333,11 @@ export default {
 .input {
 
     align-items: flex-start;
-    border-top: 3px solid var(--border-color);
     display: flex;
 
     &__pwd {
 
-        padding: 1rem 0 1rem 2rem;
+        padding: 0 0 2rem 2rem;
         white-space: nowrap;
 
     }
@@ -311,7 +345,7 @@ export default {
     &__field {
         
         flex-grow: 1;
-        padding: 1rem;
+        padding: 0 1rem 2rem 0;
         word-wrap: break-word;
         word-break: break-all;
 
@@ -336,15 +370,29 @@ export default {
 
 @keyframes cursor {
 
-    from {
+    0% {
 
+        box-shadow: 0px 0px 3px 0px var(--color-4), 0px 0px 5px 0px var(--color-1), 0px 0px 3px 0px var(--color-4);
+        opacity: 1;
+        
+
+    }
+    70% {
+
+        box-shadow: 0px 0px 3px 0px var(--color-4), 0px 0px 5px 0px var(--color-1), 0px 0px 3px 0px var(--color-4);
         opacity: 1;
 
     }
+    75% {
 
-    to {
+        box-shadow: 0px 0px 5px 0px var(--color-4), 0px 0px 5px 0px var(--color-1), 0px 0px 5px 0px var(--color-4);
+        opacity: .1;
 
-        opacity: .5;
+    }
+    100% {
+
+        box-shadow: 0px 0px 5px 0px var(--color-4), 0px 0px 5px 0px var(--color-1), 0px 0px 5px 0px var(--color-4);
+        opacity: .1;
 
     }
 
@@ -352,7 +400,31 @@ export default {
 
 .char-ref {
 
+    bottom: 100%;
     display: inline-block;
+    opacity: 0;
+    position: absolute;
+    right: 100%;
+
+}
+
+.hidden-input {
+
+    border: 0 none;
+    height: 0;
+    padding: 0;
+    width: 0;
+
+}
+
+.overlay {
+    
+    background-color: transparent;
+    left: 0;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    width: 100%;
 
 }
 

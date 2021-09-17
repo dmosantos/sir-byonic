@@ -1,7 +1,6 @@
 <template>
     <ul :class="$style.output">
 
-        <li v-if="lines.length == 0">&nbsp;</li>
         <li
             v-for="(line, index) in lines"
             :key="index"
@@ -35,7 +34,7 @@ export default {
 
     display: block;
     margin: 0;
-    padding: 1rem 0;
+    padding: 2rem 0 0 0;
 
 }
 

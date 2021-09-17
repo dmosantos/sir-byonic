@@ -8,6 +8,7 @@
         <Input
             @send-command="sendCommand"
             :enable="enable"
+            :write="writeText"
         />
 
     </MainTemplate>
@@ -33,7 +34,8 @@ export default {
         return {
 
             output: [],
-            enable: false
+            enable: false,
+            writeText: null
 
         }
     },
@@ -51,6 +53,8 @@ export default {
             this.enable = false;
         
             await this.write('INITIALIZING...', 0);
+            await this.write('SIR-BYONIC v17.5.77', 0);
+            await this.write('', 0);
             await this.write('IDENTIFYING LANGUAGE...');
             await this.write('LANGUAGE DETECTED: PT-BR');
             await this.write('', 0);
@@ -68,7 +72,7 @@ export default {
             await this.write('.');
             await this.write('OLÁ, SEJA BEM-VINDO.');
             await this.write('SOU [SIR-BYONIC] - SIMULATED RESPONSE, BY ONIUM COMPUTERS.');
-            await this.write('ENVIE PERGUNTAS UTILIZANDO O TERMINAL DE COMANDO:');
+            await this.write('O QUE DESEJA SABER?');
             await this.write('', 0);
 
             this.enable = true;
@@ -89,6 +93,10 @@ export default {
 
                 case '/ABOUT':
                     this.about();
+                break;
+
+                case '/MATRIX':
+                    this.matrix();
                 break;
 
                 default:
@@ -126,6 +134,24 @@ export default {
 
         },
 
+        async matrix() {
+
+            this.enable = false;
+        
+            this.sendCommand({ question: '/CLEAR' });
+            await this.write('Wake up, Neo...', 3000);
+            this.sendCommand({ question: '/CLEAR' });
+            await this.write('The Matrix has you...', 3000);
+            this.sendCommand({ question: '/CLEAR' });
+            await this.write('Follow the white rabbit.', 3000);
+            this.sendCommand({ question: '/CLEAR' });
+            await this.write('Knock, knock, Neo.', 3000);
+            this.sendCommand({ question: '/CLEAR' });
+
+            this.enable = true;
+
+        },
+
         async showAnswer(command) {
 
             this.enable = false;
@@ -155,19 +181,20 @@ export default {
                 
             await this.write('', 0);
             await this.write(`RESPOSTA: [${command.answer}]`, 0);
-                    
+            await this.write('', 0);
+
             this.enable = true;
 
         },
 
-        write(text, timeout, update = false) {
+        async write(text, timeout, update = false) {
 
             if(typeof timeout == 'undefined')
-                timeout = (Math.random() * (2000 - 100)) + 100;
+                timeout = (Math.random() * (1000 - 100)) + 100;
 
             return new Promise((resolve) => {
                 
-                setTimeout(() => {
+                const doWrite = () => {
 
                     if(update)
                         this.output[this.output.length - 1] = text;
@@ -175,11 +202,45 @@ export default {
                     else
                         this.output.push(text);
 
+                    this.writeText = null;
+
                     this.$nextTick(() => window.scrollTo(0, document.body.scrollHeight));
                     
-                    resolve();
+                    setTimeout(() => {
+                    
+                        resolve();
+                    
+                    }, timeout);
 
-                }, timeout);
+                }
+
+
+                if(update)
+                    doWrite();
+
+                else {
+                    
+                    this.writeText = '';
+                    
+                    let i = 0;
+                    
+                    let interval = setInterval(() => {
+
+                        this.writeText += text[i];
+
+                        i++;
+
+                        if(i >= text.length) {
+                            
+                            doWrite();
+
+                            clearInterval(interval);
+
+                        }
+                    }, 30);
+
+                }
+
 
             });
             
