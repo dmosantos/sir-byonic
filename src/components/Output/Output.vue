@@ -41,9 +41,11 @@ export default {
 .line {
 
     list-style: none;
+    overflow: hidden;
+    overflow-wrap: break-word;
     padding: 0 2rem;
     word-wrap: break-word;
-    word-break: break-all;
+    white-space: pre-wrap;
 
 }
 

@@ -1,49 +1,62 @@
 <template>
-    <div>
+    <div :class="$style.input">
+
+        <div
+            :class="$style.container"
+            @click="doFocus"
+        >
         
-        <div :class="$style.input">
-            
-            <div :class="$style.inputPwd">
-                {{ enable ? pwd : '' }}
-            </div>
-
-            <span ref="char" :class="$style.charRef">X</span>
-
             <div
-                ref="field"
-                :class="$style.inputField"
-                v-html="computedQuestion"
+                :class="$style.caret"
+                :style="{ left: caretOffset[0] + 'px', top: caretOffset[1] + 'px' }"
             ></div>
 
-            <input
-                ref="hiddenInput"
-                :class="$style.hiddenInput"
+            <textarea
+                ref="field"
+                :class="$style.field"
+                :style="{ height: fieldHeight ? fieldHeight + 'px' : 'auto' }"
+                :value="inputText"
+                @input="onInput"
+                @keydown="onChange"
+                @keydown.esc.prevent="cancel"
+                @keydown.enter.prevent="sendCommand"
+                @keyup="onChange"
+                @click="onChange"
+                @focus="onChange"
+                @blur="doFocus"
                 type="text"
-                @input="focusHiddenInput"
-                @blur="focusHiddenInput"
+                rows="1"
                 autofocus
-            />
+            ></textarea>
 
         </div>
 
         <div
-            :class="$style.overlay"
-            @click="focusHiddenInput"
-        />
-        
+            :class="[$style.container, $style.mirror]"
+            @click="doFocus"
+        >
+            
+            <div
+                ref="mirror"
+                :class="$style.field"
+            >{{ textStart }}<span ref="caret" :class="$style.caret" /></div>
+
+        </div>
+
         <!-- <ul>
-            <li>caretPosition: {{ caretPosition }}</li>
             <li>command: {{ command }}</li>
             <li>answering: {{ answering }}</li>
             <li>selectedSausage: {{ selectedSausage }}</li>
+            <li>sausages: {{ sausages[selectedSausage] }}</li>
+            <li>caretOffset: {{ caretOffset }}</li>
+            <li>inputText: {{ inputText }}</li>
+            <li>fieldHeight: {{ fieldHeight }}</li>
         </ul> -->
         
     </div>
 </template>
 
 <script>
-
-import { useKeypress } from 'vue3-keypress';
 
 export default {
 
@@ -62,13 +75,12 @@ export default {
     data() {
         return {
 
-            pwd: '',
-            caretPosition: 0,
-            command: {
-                question: '',
-                answer: ''
-            },
+            inputText: null,
+            command: { question: '', answer: '' },
             answering: false,
+            caretPosition: 0,
+            caretOffset: [0, 0],
+            fieldHeight: null,
             selectedSausage: 0,
             sausages: this.shuffleSausages(),
             sausageCharPos: 0
@@ -78,7 +90,7 @@ export default {
 
     computed: {
 
-        computedQuestion() {
+        textStart() {
 
             let question;
             let caretPosition;
@@ -97,179 +109,129 @@ export default {
 
             }
 
-            return (
-                question.slice(0, caretPosition) +
-                `<span></span>` +
-                question.slice(caretPosition, question.length)
-            ).replace(/ /g, '&nbsp;');
+            return question.slice(0, caretPosition);
 
-        }
+        },
 
     },
 
-    created() {
+    watch: {
 
-        useKeypress({
-            keyEvent: "keydown",
-            keyBinds: [],
-            onAnyKey: this.onKeyPress
-        });
+        write(value) {
+
+            this.inputText = value;
+            this.updateCaretOffset();
+            this.updateFieldHeight();
+
+        },
+
+        inputText(value) {
+
+            this.command.question = (value || '').toUpperCase();
+            this.updateCaretOffset();
+            
+        }
 
     },
 
     methods: {
 
-        onKeyPress({ event }) {
+        onInput(event) {
 
-            // console.log(event.key);
+            event.preventDefault();
 
-            if(!this.$props.enable)
-                return;
+            let value = (event.target.value || '').toUpperCase();
 
-            let question = this.command.question || '';
-            let character = event.key;
-            let newCaretPosition = this.caretPosition;
-
-            switch(character) {
+            if(this.command.question == '' && value == ' ') {
                 
-                case 'Enter':
-
-                    event.preventDefault();
-                    
-                    if(this.answering)
-                        this.answering = false;
-                    
-                    else {
-                        
-                        this.sendCommand();
-                        return;
-
-                    }
-
-                break;
-
-                case 'Escape':
-
-                    event.preventDefault();
-                    this.cancel();
-                    return;
-
-                case 'ArrowLeft':
-
-                    event.preventDefault();
-                    newCaretPosition--;
-                    this.answering = false;
-
-                break;
-
-                case 'ArrowRight':
-
-                    event.preventDefault();
-                    newCaretPosition++;
-                    this.answering = false;
-
-                break;
-
-                case 'ArrowUp':
-                case 'ArrowDown':
-                    {
-                
-                        event.preventDefault();
-
-                        var computedStyle = getComputedStyle(this.$refs.field);
-                        let fieldWidth = this.$refs.field.clientWidth;
-                        fieldWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
-                        let charWidth = this.$refs.char.clientWidth;
-                        let charCount = Math.ceil(fieldWidth / charWidth) + 1;
-
-                        newCaretPosition = character == 'ArrowUp'
-                            ? this.caretPosition - charCount + 2
-                            : this.caretPosition + charCount - 2;
-
-                        this.answering = false;
-                    
-                    }
-                break;
-
-                case 'Home':
-
-                    event.preventDefault();
-                    newCaretPosition = 0;
-                    this.answering = false;
-
-                break;
-
-                case 'End':
-
-                    event.preventDefault();
-                    newCaretPosition = question.length;
-                    this.answering = false;
-
-                break;
-
-                case 'Delete':
-                    
-                    event.preventDefault();
-                    this.command.question = question.substring(0, this.caretPosition) + question.substring(this.caretPosition + 1);
-                    this.answering = false;
-                
-                break;
-
-                case 'Backspace':
-                
-                    event.preventDefault();
-                    this.command.question = question.substring(0, this.caretPosition - 1) + question.substring(this.caretPosition);
-                    newCaretPosition--;
-                    this.answering = false;
-
-                break;
-
-                case '<':
-                case '>':
-                    event.preventDefault();
-                    return;
-
-            }
-
-            if(this.caretPosition != newCaretPosition)
-                this.caretPosition = newCaretPosition <= 0
-                    ? 0
-                    : newCaretPosition >= question.length
-                        ? question.length
-                        : newCaretPosition;
-
-            if(!character || character.length != 1)
-                return;
-
-            if(question == '' && character == ' ') {
-                
+                this.cancel();
                 this.answering = true;
                 this.command.answer = '';
                 this.selectedSausage = 0;
-                character = '';
 
             }
 
             if(this.answering) {
 
-                if(this.sausages[this.selectedSausage].length <= this.sausageCharPos) {
+                if(value.length > (this.inputText || '').length) {
+
+                    this.command.answer += value.substr(-1);
+
+                    if(this.sausages[this.selectedSausage].length <= this.sausageCharPos) {
+                        
+                        this.selectedSausage = this.selectedSausage + 1 == this.sausages.length ? 0 : this.selectedSausage + 1;
+                        this.sausageCharPos = 0;
+
+                    }
+
+                    let index = value.length - 1;
+                    let newValue = this.sausages[this.selectedSausage][this.sausageCharPos];
                     
-                    this.selectedSausage = this.selectedSausage + 1 == this.sausages.length ? 0 : this.selectedSausage + 1;
-                    this.sausageCharPos = 0;
+                    this.inputText = value.substr(0, index) + newValue + value.substr(index + newValue.length);
+                    this.sausageCharPos++;
+
+                } else {
+
+                    this.command.answer = this.command.answer.slice(0, -1);
+                    this.inputText = this.inputText.slice(0, -1);
 
                 }
 
-                this.command.answer += character.toUpperCase();
-                character = this.sausages[this.selectedSausage][this.sausageCharPos];
-                this.sausageCharPos++;
+            }
+
+            else
+                this.inputText = value;
+
+            this.onChange(event);
+
+        },
+
+        updateCaretOffset() {
+
+            this.$nextTick(() => {
+
+                if(this.$refs.caret)
+                    this.caretOffset = [this.$refs.caret.offsetLeft, this.$refs.caret.offsetTop];
+
+                else
+                    this.caretOffset = [0, 0];
+
+            });
+
+            window.scrollTo(0, document.body.scrollHeight);
+
+        },
+
+        updateFieldHeight() {
+
+            this.fieldHeight = this.$refs.field.scrollHeight;
+
+        },
+
+        onChange(event) {
+
+            let el = event.target;
+            let pos = 0;
+
+            if ('selectionStart' in el)
+                pos = el.selectionStart;
+            
+            else if ('selection' in document) {
+                
+                el.focus();
+                let Sel = document.selection.createRange();
+                let SelLength = document.selection.createRange().text.length;
+                Sel.moveStart('character', -el.value.length);
+                pos = Sel.text.length - SelLength;
 
             }
 
-            this.command.question = question.substring(0, this.caretPosition) + character.toUpperCase() + question.substring(this.caretPosition);
-            
-            this.caretPosition++;
+            this.caretPosition = pos;
+            this.fieldHeight = el.scrollHeight;
+            this.updateCaretOffset();
 
-            window.scrollTo(0, document.body.scrollHeight);
+            if(!this.$props.enable)
+                event.preventDefault();
 
         },
 
@@ -292,15 +254,15 @@ export default {
 
         cancel() {
 
-            this.caretPosition = 0;
-            this.command = {
-                question: '',
-                answer: ''
-            },
+            this.inputText = null;
+            this.command = { question: '', answer: '' };
             this.answering = false;
+            this.caretPosition = 0;
+            this.caretOffset = [0, 0];
+            this.fieldHeight = null;
             this.selectedSausage = 0;
-            this.sausageCharPos = 0;
             this.sausages = this.shuffleSausages();
+            this.sausageCharPos = 0;
 
         },
 
@@ -309,16 +271,23 @@ export default {
             if(!this.command.question)
                 return;
 
+            if(this.answering) {
+                
+                this.answering = false;
+                this.command.answer = this.command.answer.trim();
+                return;
+
+            }
+
             this.$emit('sendCommand', this.command);
 
             this.cancel();
 
         },
 
-        focusHiddenInput() {
+        doFocus() {
 
-            this.$refs.hiddenInput.value = '';
-            this.$refs.hiddenInput.focus();
+            this.$refs.field.focus();
 
         }
 
@@ -332,39 +301,70 @@ export default {
 
 .input {
 
-    align-items: flex-start;
-    display: flex;
+    margin: 0 2rem 2rem 2rem;
+    position: relative;
 
-    &__pwd {
+}
 
-        padding: 0 0 2rem 2rem;
-        white-space: nowrap;
+.container {
+
+    position: relative;
+
+}
+
+.field {
+
+    animation: glow .05s linear infinite alternate;
+    background: transparent;
+    border: 0 none;
+    caret-color: transparent;
+    color: var(--primary-text-color);
+    font-family: 'Courier Prime', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    padding: 0;
+    position: relative;
+    resize: none;
+    text-transform: uppercase;
+    text-shadow: 0px 0px 5px var(--color-4), 0px 0px 5px var(--color-1), 0px 0px 5px var(--color-4);
+    width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    z-index: 5;
+
+    &:focus {
+
+        outline: none;
 
     }
 
-    &__field {
-        
-        flex-grow: 1;
-        padding: 0 1rem 2rem 0;
-        word-wrap: break-word;
-        word-break: break-all;
+}
 
-        span {
+.mirror {
 
-            animation: cursor .2s linear infinite alternate;
-            border-radius: 2px;
-            content: '';
-            background-color: var(--primary-text-color);
-            display: inline-block;
-            height: 1em;
-            margin-left: -.05em;
-            margin-right: -.65em;
-            vertical-align: top;
-            width: .7em;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    z-index: 1;
 
-        }
+}
 
-    }
+.caret {
+
+    animation: cursor .2s linear infinite alternate;
+    border-radius: 2px;
+    content: '';
+    background-color: var(--primary-text-color);
+    display: inline-block;
+    height: 1em;
+    margin-left: -.05em;
+    margin-right: -.65em;
+    position: absolute;
+    vertical-align: top;
+    width: .7em;
 
 }
 
@@ -395,36 +395,6 @@ export default {
         opacity: .1;
 
     }
-
-}
-
-.char-ref {
-
-    bottom: 100%;
-    display: inline-block;
-    opacity: 0;
-    position: absolute;
-    right: 100%;
-
-}
-
-.hidden-input {
-
-    border: 0 none;
-    height: 0;
-    padding: 0;
-    width: 0;
-
-}
-
-.overlay {
-    
-    background-color: transparent;
-    left: 0;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    width: 100%;
 
 }
 
