@@ -134,6 +134,18 @@ export default {
 
     },
 
+    created() {
+
+        window.addEventListener('focus', this.doFocus);
+
+    },
+
+    unmounted() {
+        
+        window.removeEventListener('focus', this.doFocus);
+
+    },
+
     methods: {
 
         onInput(event) {
@@ -278,6 +290,8 @@ export default {
                 return;
 
             }
+
+            this.command.question = this.command.question.trim();
 
             this.$emit('sendCommand', this.command);
 

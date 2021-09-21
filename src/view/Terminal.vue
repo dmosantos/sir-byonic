@@ -100,6 +100,23 @@ export default {
                 break;
 
                 default:
+
+                    // Math Expression
+                    if(/^[0-9\( \)\.\*\/\+\-]+$/g.test(command.question)) { // eslint-disable-line
+
+                        try {
+                            
+                            command.answer = eval(command.question);
+
+                        } catch(e) {
+
+                            command.answer = 'Até tentei entender... Mas esta expressão matemática é inválida';
+
+                        }
+
+                    }
+
+                    // Show answer
                     this.showAnswer(command);
 
             }
@@ -157,7 +174,7 @@ export default {
             this.enable = false;
 
             if(!command.answer)
-                command.answer = 'NÃO SEI AO CERTO SOBRE ISSO... VOCÊ NÃO FEZ A PERGUNTA CORRETAMENTE.';
+                command.answer = 'NÃO SEI AO CERTO SOBRE ISSO... VOCÊ NÃO FEZ A PERGUNTA CORRETAMENTE';
             
             if(this.output.length > 0) {
             

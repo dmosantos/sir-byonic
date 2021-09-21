@@ -1,11 +1,15 @@
 <template>
     <div :class="$style.mainTemplate">
 
-        <AppMain>
+        <AppMain :class="$style.appMain">
             <slot />
         </AppMain>
 
         <div :class="$style.overlay" />
+
+        <svg :class="$style.logoBg">
+            <use :xlink:href="`${require('@/assets/logo-onium-computers.svg')}#logo`" />
+        </svg>
         
     </div>
 </template>
@@ -34,6 +38,13 @@ export default {
 
 }
 
+.app-main {
+
+    position: relative;
+    z-index: 10;
+
+}
+
 .overlay {
 
     animation: blink .05s linear infinite alternate;
@@ -48,6 +59,20 @@ export default {
     pointer-events: none;
     width: 100%;
     z-index: 50;
+
+}
+
+.logoBg {
+
+    fill: #ffffff;
+    display: block;
+    height: 100%;
+    left: 0;
+    opacity: .03;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
 
 }
 
