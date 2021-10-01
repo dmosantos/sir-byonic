@@ -131,7 +131,7 @@ export default {
             await this.write('', 0);
             await this.write('', 0);
             await this.write('CARREGANDO AJUDA...', 0);
-            await this.write('VOCÊ PODE ME CONTAR SEGREDINHOS TECLANDO [ESPAÇO].');
+            await this.write('VOCÊ PODE ME CONTAR SEGREDOS SE ME DER UM ESPAÇO...');
             await this.write('AJUDA FINALIZADA <<<');
 
             this.enable = true;
