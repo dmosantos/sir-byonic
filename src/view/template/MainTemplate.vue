@@ -69,7 +69,7 @@ export default {
     height: 100%;
     left: 0;
     opacity: .03;
-    position: absolute;
+    position: fixed;
     top: 0;
     width: 100%;
     z-index: 1;
