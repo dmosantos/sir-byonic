@@ -2,23 +2,6 @@
     <Terminal />
 </template>
 
-<script>
-
-import Terminal from '@/view/Terminal';
-
-export default {
-  
-    name: 'App',
-
-    components: {
-        Terminal
-    }
-
-}
+<script setup lang="ts">
+import Terminal from './view/Terminal.vue'
 </script>
-
-<style lang="scss">
-
-@import '@/style/main.scss';
-
-</style>

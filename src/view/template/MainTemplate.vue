@@ -7,30 +7,19 @@
 
         <div :class="$style.overlay" />
 
-        <svg :class="$style.logoBg">
-            <use :xlink:href="`${require('@/assets/logo-onium-computers.svg')}#logo`" />
+        <svg :class="$style.logoBg" aria-hidden="true">
+            <use :href="`${logoUrl}#logo`" />
         </svg>
         
     </div>
 </template>
 
-<script>
-
-import AppMain from './section/AppMain';
-
-export default {
-
-    name: 'MainTemplate',
-
-    components: {
-        AppMain
-    }
-
-}
-
+<script setup lang="ts">
+import AppMain from './section/AppMain.vue'
+import logoUrl from '../../assets/logo-onium-computers.svg'
 </script>
 
-<style lang="scss" module>
+<style module>
 
 .main-template {
 

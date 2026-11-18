@@ -12,23 +12,11 @@
     </ul>
 </template>
 
-<script>
-
-export default {
-
-    name: 'Output',
-
-    props: {
-
-        lines: Array
-
-    }
-
-}
-
+<script setup lang="ts">
+defineProps<{ lines: string[] }>()
 </script>
 
-<style lang="scss" module>
+<style module>
 
 .output {
 

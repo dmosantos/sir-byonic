@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+:root {
+  --color-1: #b1ffdb;
+  --color-2: #0c0c0c;
+  --color-3: rgb(255 255 255 / 10%);
+  /* Preserve the original glow: translucent white, not saturated green. */
+  --color-4: var(--color-3);
+  --bg-color: var(--color-2);
+  --theme-color: var(--color-1);
+  --theme-color-hover: #e4fff3;
+  --primary-text-color: var(--color-1);
+  --secundary-text-color: var(--color-1);
+  --link-color: var(--color-1);
+  --link-color-hover: #fefffe;
+  --border-color: var(--color-3);
+  --border-radius: 3px;
+}
+
+*, ::after, ::before { box-sizing: border-box; }
+html {
+  background-color: var(--bg-color);
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  font-size: 20px;
+}
+body {
+  animation: glow .05s linear infinite alternate;
+  color: var(--primary-text-color);
+  text-transform: uppercase;
+  text-shadow: 0 0 5px var(--color-4), 0 0 5px var(--color-1), 0 0 5px var(--color-4);
+}
+@keyframes glow {
+  from { text-shadow: 0 0 3px var(--color-4), 0 0 5px var(--color-1), 0 0 3px var(--color-4); }
+  to { text-shadow: 0 0 5px var(--color-4), 0 0 3px var(--color-1), 0 0 5px var(--color-4); }
+}
+a {
+  color: var(--link-color);
+  text-decoration: underline;
+  &:hover { color: var(--link-color-hover); }
+}
+a, input, button { transition: all .1s linear; }
+p { margin: 0; padding: 0 0 1rem; }
+strong { font-weight: 700; }
+::placeholder { color: var(--bg-color); opacity: .5; }
+.fade-enter-active, .fade-leave-active { transition: opacity .2s ease, transform .2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-.5rem); }
+@media (max-width: 1000px) { html { font-size: 15px; } }
+@media (max-width: 600px) { html { font-size: 14px; } }
